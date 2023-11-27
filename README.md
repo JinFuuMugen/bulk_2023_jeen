@@ -14,6 +14,4 @@
   - **Файл BULK_4.txt**: 0.0028286
   - **Файл BULK_5.txt**: 0.0049638
 
-[Когда здесь окажутся результаты.......]
-- **ЯП:** ![Языки](https://img.shields.io/github/languages/count/JinFuuMugen/bulk_2023_jeen?label=Go&style=flat-square)
 - **Последний коммит:** ![Последний коммит](https://img.shields.io/github/last-commit/JinFuuMugen/bulk_2023_jeen?style=flat-square)
