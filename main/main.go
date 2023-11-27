@@ -3,18 +3,28 @@ package main
 import (
 	"bulk2023_jeen/compute"
 	"bulk2023_jeen/datatransfer"
-	"fmt"
+	"log"
 	"math"
 	"os"
 	"time"
 )
 
 func main() {
+	logFile, err := os.Create("log.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logFile.Close()
+
+	if err := os.Truncate("log.txt", 0); err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(logFile)
 
 	startTime := time.Now()
 
 	if len(os.Args) != 2 {
-		fmt.Println("Usage: go run main.go <input_file_path>")
+		log.Println("Usage: go run main.go <input_file_path>")
 		os.Exit(1)
 	}
 
@@ -22,8 +32,8 @@ func main() {
 
 	datatransfer.ReadParseInput(os.Args[1], &beamData)
 
-	fmt.Printf("GRID: length: %.2f, partitions: %d, moments: %d\n", beamData.Length, beamData.Partitions, beamData.TimeMoments)
-	fmt.Printf("TUBE: conductivity: %.7f\n", beamData.Conductivity)
+	log.Printf("GRID: length: %.2f, partitions: %d, moments: %d\n", beamData.Length, beamData.Partitions, beamData.TimeMoments)
+	log.Printf("TUBE: conductivity: %.7f\n", beamData.Conductivity)
 
 	newVal := compute.CalculateTemperature(&beamData)
 
@@ -35,13 +45,13 @@ func main() {
 		}
 	}
 
-	fmt.Printf("Calc values are: %.3f\n", newVal)
-	fmt.Printf("Given values are: %.3f\n", beamData.TemperatureData)
+	log.Printf("Calc values are: %.3f\n", newVal)
+	log.Printf("Given values are: %.3f\n", beamData.TemperatureData)
 
-	fmt.Printf("Discrepancies: %.7f\n", discrepancies)
+	log.Printf("Discrepancies: %.7f\n", discrepancies)
 
 	endTime := time.Now()
 	elapsed := endTime.Sub(startTime)
 
-	fmt.Printf("Time elapsed: %s\n", elapsed)
+	log.Printf("Time elapsed: %s\n", elapsed)
 }
