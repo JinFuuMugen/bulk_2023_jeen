@@ -87,7 +87,7 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 				for timeIDX < len(values) {
 					tempData := make([]float64, 0)
 					noDataFlag := false
-					for i := timeIDX + 1; i <= timeIDX+int(beamData.Length); i++ {
+					for i := timeIDX + 1; i <= timeIDX+int(beamData.Partitions); i++ {
 						if strings.Contains(values[i], "-") {
 							noDataFlag = true
 							break
@@ -108,7 +108,7 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 
 					beamData.TemperatureData[timeValue] = tempData
 					if !noDataFlag {
-						timeIDX += int(beamData.Length) + 1
+						timeIDX += int(beamData.Partitions) + 1
 					} else {
 						timeIDX += 2
 					}
@@ -116,7 +116,7 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 
 			case TUBEBLOCK:
 				values := strings.Split(line, " ")
-				beamData.Conductivity = make([]float64, int64(beamData.Length))
+				beamData.Conductivity = make([]float64, beamData.Partitions)
 				for i, v := range values {
 					c, err := strconv.ParseFloat(v, 64)
 					if err != nil {

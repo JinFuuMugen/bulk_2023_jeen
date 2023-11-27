@@ -13,6 +13,19 @@
 			],
 			"group": "build",
 			"detail": "cd c:\\Users\\ORAPIO_2\\Desktop\\optimization_methods\\bulk_2023_jeen; go build ${fileDirname}"
+		},
+		{
+			"type": "go",
+			"label": "go: build package",
+			"command": "build",
+			"args": [
+				"${fileDirname}"
+			],
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"detail": "cd c:\\Users\\ORAPIO_2\\Desktop\\optimization_methods\\bulk_2023_jeen; go build ${fileDirname}"
 		}
 	]
 }
