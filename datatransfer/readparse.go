@@ -78,7 +78,6 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 				}
 
 			case TEMPBLOCK:
-
 				beamData.TemperatureData = make(map[float64][]float64, beamData.TimeMoments)
 
 				values := strings.Split(line, " ")
@@ -86,17 +85,17 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 				timeIDX := 0
 				for timeIDX < len(values) {
 					tempData := make([]float64, 0)
-					noDataFlag := false
 					for i := timeIDX + 1; i <= timeIDX+int(beamData.Partitions); i++ {
-						if strings.Contains(values[i], "-") {
-							noDataFlag = true
-							break
-						} else {
-							c, err := strconv.ParseFloat(values[i], 64)
-							if err != nil {
-								panic(fmt.Errorf("error parsing TEMP value (TemperatureData at %d index): %w", i, err))
+						{
+							if values[i] == "-1" {
+								tempData = append(tempData, -1) // Заменяем -1 на 0
+							} else {
+								c, err := strconv.ParseFloat(values[i], 64)
+								if err != nil {
+									panic(fmt.Errorf("error parsing TEMP value (TemperatureData at %d index): %w", i, err))
+								}
+								tempData = append(tempData, c)
 							}
-							tempData = append(tempData, c)
 						}
 					}
 
@@ -107,11 +106,7 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 					}
 
 					beamData.TemperatureData[timeValue] = tempData
-					if !noDataFlag {
-						timeIDX += int(beamData.Partitions) + 1
-					} else {
-						timeIDX += 2
-					}
+					timeIDX += int(beamData.Partitions) + 1
 				}
 
 			case TUBEBLOCK:

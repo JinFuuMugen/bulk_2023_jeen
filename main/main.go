@@ -32,8 +32,9 @@ func main() {
 
 	datatransfer.ReadParseInput(os.Args[1], &beamData)
 
-	log.Printf("GRID: length: %.2f, partitions: %d, moments: %d\n", beamData.Length, beamData.Partitions, beamData.TimeMoments)
-	log.Printf("TUBE: conductivity: %.7f\n", beamData.Conductivity)
+	log.Printf("GRID: length: %.2f, partitions: %d, moments: %d\n\n\n", beamData.Length, beamData.Partitions, beamData.TimeMoments)
+
+	log.Printf("TUBE: conductivity: %.7f\n\n\n", beamData.Conductivity)
 
 	newVal := compute.CalculateTemperature(&beamData)
 
@@ -41,17 +42,21 @@ func main() {
 
 	for i := 0; i < int(beamData.TimeMoments); i++ {
 		for j := 0; j < int(beamData.Partitions); j++ {
-			discrepancies += math.Pow(newVal[float64(i)][j]-beamData.TemperatureData[float64(i)][j], 2)
+			if beamData.TemperatureData[float64(i)][j] != -1.0 {
+				discrepancies += math.Pow(newVal[float64(i)][j]-beamData.TemperatureData[float64(i)][j], 2)
+			}
+
 		}
 	}
 
-	log.Printf("Calc values are: %.3f\n", newVal)
-	log.Printf("Given values are: %.3f\n", beamData.TemperatureData)
+	log.Printf("Calc values are: %.3f\n\n\n", newVal)
 
-	log.Printf("Discrepancies: %.7f\n", discrepancies)
+	log.Printf("Given values are: %.3f\n\n\n", beamData.TemperatureData)
+
+	log.Printf("Discrepancies: %.7f\n\n\n", discrepancies)
 
 	endTime := time.Now()
 	elapsed := endTime.Sub(startTime)
 
-	log.Printf("Time elapsed: %s\n", elapsed)
+	log.Printf("Time elapsed: %s\n\n\n", elapsed)
 }
