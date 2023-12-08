@@ -9,7 +9,8 @@
             "program": "${workspaceFolder}/main/main.go",
             "env": {},
             "args": ["input.txt"],
-            "showLog": true
+            "showLog": true,
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

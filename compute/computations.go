@@ -2,9 +2,36 @@ package compute
 
 import (
 	"bulk2023_jeen/datatransfer"
-
-	"github.com/gonum/matrix/mat64"
 )
+
+func solveTDMA(a, b, c, d []float64) []float64 {
+	n := len(a)
+
+	ac := make([]float64, n)
+	bc := make([]float64, n)
+	cc := make([]float64, n)
+	dc := make([]float64, n)
+	copy(ac, a)
+	copy(bc, b)
+	copy(cc, c)
+	copy(dc, d)
+
+	cc[0] /= bc[0]
+	dc[0] /= bc[0]
+	n--
+	for i := 1; i < n; i++ {
+		cc[i] /= bc[i] - ac[i]*cc[i-1]
+		dc[i] = (dc[i] - ac[i]*dc[i-1]) / (bc[i] - ac[i]*cc[i-1])
+	}
+
+	dc[n] = (dc[n] - ac[n]*dc[n-1]) / (bc[n] - ac[n]*cc[n-1])
+
+	for i := n - 1; i >= 0; i-- {
+		dc[i] -= cc[i] * dc[i+1]
+	}
+
+	return dc
+}
 
 func CalculateTemperature(beamData *datatransfer.BeamData) map[float64][]float64 {
 	dx := beamData.Length / float64(beamData.Partitions)
@@ -34,36 +61,20 @@ func CalculateTemperature(beamData *datatransfer.BeamData) map[float64][]float64
 	C := make([]float64, Nx)
 
 	for i := 0; i < Nx; i++ {
-		A[i] = (dt * r1[i]) / (2 * dx * dx)
+		A[i] = -(dt * r1[i]) / (2 * dx * dx)
 		B[i] = 1 + (dt*(r1[i]+r2[i]))/(2*dx*dx)
-		C[i] = (dt * r2[i]) / (2 * dx * dx)
+		C[i] = -(dt * r2[i]) / (2 * dx * dx)
 	}
 
-	coeffMatrix := mat64.NewDense(Nx, Nx, nil)
-
-	for i := 0; i < Nx; i++ {
-		coeffMatrix.Set(i, i, B[i])
-		if i > 0 {
-			coeffMatrix.Set(i, i-1, -A[i])
-		}
-		if i < Nx-1 {
-			coeffMatrix.Set(i, i+1, -C[i])
-		}
-	}
-
-	coeffMatrix.Set(0, 0, 1)
-	coeffMatrix.Set(Nx-1, Nx-1, 1)
-	coeffMatrix.Set(0, 1, 0)
-	coeffMatrix.Set(Nx-1, Nx-2, 0)
+	B[0] = 1
+	C[0] = 0
+	B[len(B)-1] = 1
+	A[len(A)-1] = 0
+	A[0] = 0
+	C[len(C)-1] = 0
 
 	for i := 1; i < int(beamData.TimeMoments); i++ {
-		prevData := temperatureMap[float64(i-1)]
-		t := mat64.NewDense(Nx, 1, prevData)
-
-		var D mat64.Dense
-
-		D.Solve(coeffMatrix, t)
-		temperatureMap[float64(i)] = D.ColView(0).RawVector().Data
+		temperatureMap[float64(i)] = solveTDMA(A, B, C, temperatureMap[float64(i-1)])
 	}
 
 	return temperatureMap

@@ -30,7 +30,7 @@ func ReadParseInput(filepath string, beamData *BeamData) {
 
 	scanner := bufio.NewScanner(file)
 
-	const maxBufferSize = 1 << 20
+	const maxBufferSize = 1 << 30
 	buf := make([]byte, maxBufferSize)
 	scanner.Buffer(buf, maxBufferSize)
 
